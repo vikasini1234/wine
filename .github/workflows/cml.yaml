@@ -8,15 +8,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v1
-      - name: Upgrade pip
-        run: /usr/bin/python3 -m pip install --upgrade pip
-
-      - name: Update Node.js to v16
-        run: |
-          curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-          apt-get install -y nodejs
-
-      
       - name: cml_run
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -26,13 +17,4 @@ jobs:
           python train.py
 
           echo "MODEL METRICS"
-          echo "## Model metrics" > report.md
-          cat metrics.txt >> report.md
-          
-          echo "## Data viz" >> report.md
-          cml-publish feature_importance.png --md >> report.md
-          cml-publish residuals.png --md >> report.md
-          
-          cml-send-comment report.md               
-
-    
+          cat metrics.txt
