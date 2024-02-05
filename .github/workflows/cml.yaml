@@ -1,5 +1,9 @@
 name: model-wine-quality
 on: [push]
+permissions:
+    id-token: write
+    contents: write            
+    security-events: write  
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -18,3 +22,10 @@ jobs:
 
           echo "MODEL METRICS"
           cat metrics.txt
+
+          echo "Model metrics:" >> report.md
+          cat metrics.txt >> report.md
+          echo "Data viz">>report.md
+          echo "Data viz" >> report.md
+          echo '![](./feature_importance.png)' >> report.md
+          echo '![](./residuals.png)' >> report.md
