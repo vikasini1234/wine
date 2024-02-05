@@ -3,11 +3,19 @@ on: [push]
 jobs:
   run:
     runs-on: [ubuntu-latest]
-    # optionally use a convenient Ubuntu LTS + DVC + CML image
     container: docker://dvcorg/cml-py3:latest
     steps:
       - uses: actions/checkout@v3
       - uses: iterative/setup-cml@v1
+
+      - name: Upgrade pip
+        run: /usr/bin/python3 -m pip install --upgrade pip
+
+      - name: Update Node.js to v16
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+          apt-get install -y nodejs
+
       - name: cml_run
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -19,8 +27,8 @@ jobs:
           echo "## MODEL METRICS" > report.md
           cat metrics.txt >> report.md
 
-          echo "## Data viz" >>report.md
-          cml-publish feature_importance.png --md >> report.md
-          cml-publish residuals.png --md >> report.md
+          echo "## Data viz" >> report.md
+          echo "![feature importance](feature_importance.png)" >> report.md
+          echo "![residuals](residuals.png)" >> report.md
 
           cml-send-comment report.md
