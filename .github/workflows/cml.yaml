@@ -11,6 +11,9 @@ jobs:
     container: docker://dvcorg/cml-py3:latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
       - uses: iterative/setup-cml@v1
       - name: cml_run
         env:
@@ -23,10 +26,11 @@ jobs:
           echo "MODEL METRICS"
           cat metrics.txt
 
-          echo "## Model metrics:" >> report.md
+          echo "Model metrics:" >> report.md
           cat metrics.txt >> report.md
-          echo "## Data viz">>report.md
-          echo "## Data viz" >> report.md
+          echo "Data viz">>report.md
+          echo "Data viz" >> report.md
           echo '![](./feature_importance.png)' >> report.md
           echo '![](./residuals.png)' >> report.md
-        
+          cml comment create --publish report.md
+          
