@@ -29,3 +29,5 @@ jobs:
           echo "Data viz" >> report.md
           echo '![](./feature_importance.png)' >> report.md
           echo '![](./residuals.png)' >> report.md
+          
+          cml-send-comment report.md
