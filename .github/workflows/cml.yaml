@@ -25,7 +25,8 @@ jobs:
          
           # Run tests
           echo "RUNNING TESTS"
-          python -m unittest test_model.py
+          python -m unittest test_model.TestWineModel 2>&1 | tee test_report.md
+          cml comment create --publish test_report.md
 
           echo "MODEL METRICS"
           cat metrics.txt
