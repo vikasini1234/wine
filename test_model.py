@@ -1,6 +1,6 @@
 # test_model.py
+# test_model.py
 import unittest
-import xmlrunner
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -12,17 +12,13 @@ df = pd.read_csv('wine_quality.csv')
 df['total sulfur dioxide'] = df['total sulfur dioxide'].astype(int)
 X = df.drop('quality', axis=1)
 y = df['quality']
-
 # Split the dataset
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
 # Fit the model
 regr = RandomForestRegressor(max_depth=5, random_state=42)
 regr.fit(X_train, y_train)
-
 # Test cases
 class TestWineModel(unittest.TestCase):
-
     def test_data_format_validation(self):
         # Ensure 'pH' is of float type
         self.assertTrue(pd.api.types.is_float_dtype(X_train['pH']), "pH values must be float")
@@ -37,9 +33,6 @@ class TestWineModel(unittest.TestCase):
         # We expect the model to raise a ValueError when predicting with NaN values
         with self.assertRaises(ValueError):
             regr.predict(X_test_with_missing)
-
 # Run the tests
 if __name__ == '__main__':
-    unittest.main(
-        testRunner=xmlrunner.XMLTestRunner(output='test-reports'),
-        failfast=False, buffer=False, catchbreak=False)
+    unittest.main()
