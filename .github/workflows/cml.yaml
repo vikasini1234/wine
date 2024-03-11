@@ -15,47 +15,24 @@ jobs:
         with:
           node-version: 16
       - uses: iterative/setup-cml@v1
-     
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install xmlrunner  # Install xmlrunner here
-
-      - name: Train model
-        run: |
-          python train.py
-
-      - name: Run tests with xmlrunner
-        run: |
-          mkdir -p test-reports
-          python test_model.py  # This will generate XML reports in 'test-reports' directory
-
-      - name: Generate readable test report
-        run: |
-          echo "## Test Results\n" > test_results.md
-          for file in test-reports/*.xml; do
-            if [ -f "$file" ]; then
-              echo "\`\`\`xml" >> test_results.md
-              cat "$file" >> test_results.md
-              echo "\`\`\`\n" >> test_results.md
-            else
-              echo "No test report files found." >> test_results.md
-            fi
-          done
-        shell: bash  # Specify to use bash for this run
-
-      - name: Publish test results
+      - name: cml_run
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cml comment create --publish test_results.md
-
-      - name: Prepare and publish model metrics and data visualizations
-        run: |
-          echo "MODEL METRICS" >> report.md
+          # Your ML workflow goes here
+          pip install -r requirements.txt
+          python train.py
+         
+          # Run tests
+          echo "RUNNING TESTS"
+          python -m unittest test_model.TestWineModel 2>&1 | tee test_report.md
+          cml comment create --publish test_report.md
+          echo "MODEL METRICS"
+          cat metrics.txt
+          echo "Model metrics:" >> report.md
           cat metrics.txt >> report.md
-          echo "\nData Visualizations:" >> report.md
+          echo "Data viz">>report.md
+          echo "Data viz" >> report.md
           echo '![](./feature_importance.png)' >> report.md
           echo '![](./residuals.png)' >> report.md
           cml comment create --publish report.md
