@@ -40,7 +40,6 @@ class TestWineModel(unittest.TestCase):
 
 # Run the tests
 if __name__ == '__main__':
-    with open('test-reports/results.xml', 'wb') as output:
-        unittest.main(
-            testRunner=xmlrunner.XMLTestRunner(output='test-reports'),
-            failfast=False, buffer=False, catchbreak=False)
+    unittest.main(
+        testRunner=xmlrunner.XMLTestRunner(output='test-reports'),
+        failfast=False, buffer=False, catchbreak=False)
