@@ -22,6 +22,10 @@ jobs:
           # Your ML workflow goes here
           pip install -r requirements.txt
           python train.py
+         
+          # Run tests
+          echo "RUNNING TESTS"
+          python -m unittest test_model.py
 
           echo "MODEL METRICS"
           cat metrics.txt
