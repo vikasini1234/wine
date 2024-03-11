@@ -36,12 +36,15 @@ jobs:
         run: |
           # Combine all XML test reports into one markdown file (This step may need adjustments based on your preferences)
           echo "## Test Results\n" > test_results.md
+          shopt -s nullglob
           for file in test-reports/*.xml; do
-            # Assuming we just want to concatenate XML files for simplicity
-            # If you have a specific format or tool to convert XML to Markdown, run it here
-            echo "\`\`\`xml" >> test_results.md
-            cat "$file" >> test_results.md
-            echo "\`\`\`\n" >> test_results.md
+             if [[ -f "$file" ]]; then
+               echo "\`\`\`xml" >> test_results.md
+               cat "$file" >> test_results.md
+               echo "\`\`\`\n" >> test_results.md
+             else
+               echo "No test report files found." >> test_results.md
+             fi
           done
 
       - name: Publish test results
