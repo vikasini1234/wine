@@ -17,50 +17,45 @@ jobs:
       - uses: iterative/setup-cml@v1
      
 
-      - name: cml_run
-        env:
-          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
         run: |
-          # Your ML workflow goes here
           pip install -r requirements.txt
           pip install xmlrunner  # Install xmlrunner here
+
+      - name: Train model
+        run: |
           python train.py
+
       - name: Run tests with xmlrunner
         run: |
-          # Ensure the test-reports directory exists
           mkdir -p test-reports
-          # Make sure to specify 'testRunner' argument correctly when using 'unittest'
-          python -m unittest discover -s . -p "test_model.py" --testRunner=xmlrunner.XMLTestRunner(output='test-reports')
-
+          python test_model.py  # This will generate XML reports in 'test-reports' directory
 
       - name: Generate readable test report
         run: |
-          # Combine all XML test reports into one markdown file (This step may need adjustments based on your preferences)
           echo "## Test Results\n" > test_results.md
-          # Loop through each xml file in test-reports and concatenate them into test_results.md
           for file in test-reports/*.xml; do
             if [ -f "$file" ]; then
               echo "\`\`\`xml" >> test_results.md
               cat "$file" >> test_results.md
               echo "\`\`\`\n" >> test_results.md
+            else
+              echo "No test report files found." >> test_results.md
             fi
           done
         shell: bash  # Specify to use bash for this run
-
 
       - name: Publish test results
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cml comment create --publish test_results.md
-          
-          echo "MODEL METRICS"
-          cat metrics.txt
 
-          echo "Model metrics:" >> report.md
+      - name: Prepare and publish model metrics and data visualizations
+        run: |
+          echo "MODEL METRICS" >> report.md
           cat metrics.txt >> report.md
-          echo "Data viz">>report.md
-          echo "Data viz" >> report.md
+          echo "\nData Visualizations:" >> report.md
           echo '![](./feature_importance.png)' >> report.md
           echo '![](./residuals.png)' >> report.md
           cml comment create --publish report.md
