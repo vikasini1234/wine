@@ -1,5 +1,6 @@
 # test_model.py
 import unittest
+import xmlrunner
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -39,4 +40,7 @@ class TestWineModel(unittest.TestCase):
 
 # Run the tests
 if __name__ == '__main__':
-    unittest.main()
+    with open('test-reports/results.xml', 'wb') as output:
+        unittest.main(
+            testRunner=xmlrunner.XMLTestRunner(output=output),
+            failfast=False, buffer=False, catchbreak=False)
