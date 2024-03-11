@@ -27,12 +27,11 @@ jobs:
           python train.py
       - name: Run tests with xmlrunner
         run: |
-          # Run tests using xmlrunner and store the reports in the 'test-reports/' directory
-          python -m unittest test_model.TestWineModel --testRunner=xmlrunner.XMLTestRunner(output='test-reports') 
-          # Run tests
-          echo "RUNNING TESTS"
-          python -m unittest test_model.TestWineModel 2>&1 | tee test_report.md
-          cml comment create --publish test_report.md
+          # Ensure the test-reports directory exists
+          mkdir -p test-reports
+          # Run tests using xmlrunner
+          python -m unittest test_model.py 
+
       - name: Generate readable test report
         run: |
           # Combine all XML test reports into one markdown file (This step may need adjustments based on your preferences)
@@ -46,6 +45,8 @@ jobs:
           done
 
       - name: Publish test results
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cml comment create --publish test_results.md
           
