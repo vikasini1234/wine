@@ -29,23 +29,24 @@ jobs:
         run: |
           # Ensure the test-reports directory exists
           mkdir -p test-reports
-          # Run tests using xmlrunner
-          python -m unittest test_model.py 
+          # Make sure to specify 'testRunner' argument correctly when using 'unittest'
+          python -m unittest discover -s . -p "test_model.py" --testRunner=xmlrunner.XMLTestRunner(output='test-reports')
+
 
       - name: Generate readable test report
         run: |
           # Combine all XML test reports into one markdown file (This step may need adjustments based on your preferences)
           echo "## Test Results\n" > test_results.md
-          shopt -s nullglob
+          # Loop through each xml file in test-reports and concatenate them into test_results.md
           for file in test-reports/*.xml; do
-             if [[ -f "$file" ]]; then
-               echo "\`\`\`xml" >> test_results.md
-               cat "$file" >> test_results.md
-               echo "\`\`\`\n" >> test_results.md
-             else
-               echo "No test report files found." >> test_results.md
-             fi
+            if [ -f "$file" ]; then
+              echo "\`\`\`xml" >> test_results.md
+              cat "$file" >> test_results.md
+              echo "\`\`\`\n" >> test_results.md
+            fi
           done
+        shell: bash  # Specify to use bash for this run
+
 
       - name: Publish test results
         env:
