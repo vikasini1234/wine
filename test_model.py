@@ -26,6 +26,15 @@ class TestWineModel(unittest.TestCase):
         self.assertTrue(pd.api.types.is_float_dtype(X_train['pH']), "pH values must be float")
         # Ensure 'total sulfur dioxide' is of integer type after conversion
         self.assertTrue(pd.api.types.is_integer_dtype(X_train['total sulfur dioxide']), "Total sulfur dioxide values must be integer")
+    
+    def test_missing_value_handling(self):
+        # TC2: Missing Value Handling
+        # Create a copy of X_test and introduce NaN values in the 'fixed acidity' column
+        X_test_with_missing = X_test.copy()
+        X_test_with_missing.loc[0, 'fixed acidity'] = np.nan
+        # We expect the model to raise a ValueError when predicting with NaN values
+        with self.assertRaises(ValueError):
+            regr.predict(X_test_with_missing)
 
 # Run the tests
 if __name__ == '__main__':
