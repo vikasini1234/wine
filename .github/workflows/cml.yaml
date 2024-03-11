@@ -15,19 +15,40 @@ jobs:
         with:
           node-version: 16
       - uses: iterative/setup-cml@v1
+     
+
       - name: cml_run
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           # Your ML workflow goes here
           pip install -r requirements.txt
+          pip install xmlrunner  # Install xmlrunner here
           python train.py
-         
+      - name: Run tests with xmlrunner
+        run: |
+          # Run tests using xmlrunner and store the reports in the 'test-reports/' directory
+          python -m unittest test_model.TestWineModel --testRunner=xmlrunner.XMLTestRunner(output='test-reports') 
           # Run tests
           echo "RUNNING TESTS"
           python -m unittest test_model.TestWineModel 2>&1 | tee test_report.md
           cml comment create --publish test_report.md
+      - name: Generate readable test report
+        run: |
+          # Combine all XML test reports into one markdown file (This step may need adjustments based on your preferences)
+          echo "## Test Results\n" > test_results.md
+          for file in test-reports/*.xml; do
+            # Assuming we just want to concatenate XML files for simplicity
+            # If you have a specific format or tool to convert XML to Markdown, run it here
+            echo "\`\`\`xml" >> test_results.md
+            cat "$file" >> test_results.md
+            echo "\`\`\`\n" >> test_results.md
+          done
 
+      - name: Publish test results
+        run: |
+          cml comment create --publish test_results.md
+          
           echo "MODEL METRICS"
           cat metrics.txt
 
